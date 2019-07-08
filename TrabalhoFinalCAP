@@ -1,0 +1,224 @@
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_native_dialog.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
+#include <stdio.h>
+#define tamMURO 25
+#define alturaTELA 625
+#define larguraTELA 775
+
+typedef struct Jogador{
+    int linha;
+    int coluna;
+}Jogador;
+Jogador gamer; //variável gamer do tipo Jogador. Nela eu armazeno a posição do jogador
+typedef struct Estrelas{
+    int linha;
+    int coluna;
+}Estrelas;
+Estrelas star[5]; //Posso ter até 5 estrelas por mapa
+
+int mapa1[25][31] ={ {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                         {1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1},
+                         {1,0,1,0,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1},
+                         {1,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0,1},
+                         {1,0,1,1,1,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+                         {1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+                         {1,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,1,1,1,1,0,1,0,1,0,1},
+                         {1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1},
+                         {1,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1},
+                         {1,0,1,1,1,0,0,0,0,0,1,0,1,1,1,1,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+                         {1,0,1,0,1,0,1,1,1,0,1,0,1,0,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1},
+                         {1,0,1,0,1,0,1,0,1,1,1,0,1,0,0,1,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+                         {1,0,1,0,0,0,1,0,1,0,1,0,1,1,0,1,0,0,1,0,1,0,0,0,1,0,0,0,1,0,1},
+                         {1,0,1,1,1,1,1,0,1,0,1,0,0,1,0,1,1,0,1,0,1,0,1,1,1,0,1,0,1,0,1},
+                         {1,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,1},
+                         {1,0,1,1,1,1,1,0,1,0,1,0,0,1,0,1,1,1,1,0,1,1,1,1,1,0,1,0,0,0,1},
+                         {1,0,1,0,1,0,0,0,1,0,1,0,0,1,0,1,0,0,1,0,1,0,1,0,0,0,1,0,1,0,1},
+                         {1,0,1,0,1,0,1,0,1,0,0,0,0,1,0,1,1,1,1,0,1,0,1,1,1,0,1,0,1,0,1},
+                         {1,0,1,0,1,0,1,0,1,1,1,1,1,1,0,1,0,0,0,0,1,0,0,0,1,0,1,0,1,0,1},
+                         {1,0,1,0,0,0,1,0,1,0,0,0,0,0,0,1,0,0,1,1,1,1,1,0,0,0,1,0,1,0,1},
+                         {1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,1,0,0,1,0,0,0,1,1,1,1,0,0,1,0,1},
+                         {1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,1},
+                         {1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,0,0,1},
+                         {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1},
+                         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1} };
+int printaMapa1();
+int level_1();
+int iniciar();
+void movimentacao();
+
+int main () {
+    iniciarAllegro();
+
+    int score = 0;
+
+    score = level_1 ();
+    if (score == -1)
+        return 1;
+
+
+
+    return 0;
+}
+
+int level_1 (){
+
+    gamer.linha    = tamMURO*10;
+    gamer.coluna   = tamMURO*13;
+    star[0].linha  = tamMURO*20;
+    star[0].coluna = tamMURO*20;
+    star[1].linha  = tamMURO* 1;
+    star[1].coluna = tamMURO*19;
+    star[2].linha  = tamMURO* 5;
+    star[2].coluna = tamMURO*23;
+
+
+    int pontuacao = 0, continuaLoop = 1;
+
+    ALLEGRO_DISPLAY*     display      = NULL;
+    ALLEGRO_BITMAP*      labirinto    = NULL;
+    ALLEGRO_BITMAP*      starzinha    = NULL;
+    ALLEGRO_BITMAP*      girl         = NULL;
+    ALLEGRO_EVENT_QUEUE* fila_eventos = NULL;
+
+    display = al_create_display(larguraTELA, alturaTELA);
+    if (!display) {
+        fprintf(stderr, "Falha ao criar display\n");
+        return -1;
+    }
+    al_set_window_title(display, "Laurist - THE GAME");
+    fila_eventos = al_create_event_queue();
+    if (!fila_eventos){
+        fprintf(stderr, "Falha ao criar fila de eventos.\n");
+        al_destroy_display(display);
+        return -1;
+    }
+    labirinto = al_load_bitmap("lab.bmp");
+    if (!labirinto){
+        fprintf(stderr, "Falha ao carregar o arquivo de imagem.\n");
+        al_destroy_display(display);
+        return -1;
+    }
+    starzinha = al_load_bitmap("star.png");
+    if (!starzinha){
+        fprintf(stderr, "Falha ao carregar o arquivo de imagem.\n");
+        al_destroy_display(display);
+        return -1;
+    }
+    girl = al_load_bitmap("girl1BRANCO.png");
+    if (!girl){
+        fprintf(stderr, "Falha ao carregar o arquivo de imagem.\n");
+        al_destroy_display(display);
+        return -1;
+    }
+
+    al_register_event_source(fila_eventos, al_get_display_event_source(display));
+
+    printaMapa1();
+
+    while(continuaLoop){
+        if (!al_is_event_queue_empty(fila_eventos)){
+            ALLEGRO_EVENT evento;
+            al_wait_for_event(fila_eventos, &evento);
+            if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+                continuaLoop = 0;
+            }
+        }
+        al_flip_display();
+    }
+    al_destroy_display(display); //FECHA JANELA
+    al_register_event_source(fila_eventos, al_get_display_event_source(display));
+
+    return pontuacao;
+}
+
+int printaMapa1(){
+
+    ALLEGRO_DISPLAY* display = NULL;
+    ALLEGRO_BITMAP* labirinto = NULL;
+    ALLEGRO_BITMAP* starzinha = NULL;
+    ALLEGRO_BITMAP* girl = NULL;
+
+    if (!al_init()) {
+        fprintf(stderr, "Falha ao inicializar o allegro.\n");
+        return -1;
+    }
+    if (!al_init_image_addon()){
+        fprintf(stderr, "Falha ao inicializar add-on allegro_image.\n");
+        return -1;
+    }
+
+    labirinto = al_load_bitmap("lab.bmp");
+    if (!labirinto){
+        fprintf(stderr, "Falha ao carregar o arquivo de imagem.\n");
+        al_destroy_display(display);
+        return -1;
+    }
+    starzinha = al_load_bitmap("star.png");
+    if (!starzinha){
+        fprintf(stderr, "Falha ao carregar o arquivo de imagem.\n");
+        al_destroy_display(display);
+        return -1;
+    }
+    girl = al_load_bitmap("girl1BRANCO.png");
+    if (!girl){
+        fprintf(stderr, "Falha ao carregar o arquivo de imagem.\n");
+        al_destroy_display(display);
+        return -1;
+    }
+
+    al_draw_bitmap(labirinto, 0, 0, 0);   //PRINTA PAREDES DO LABIRINTO
+
+    al_draw_bitmap(starzinha, star[0].coluna, star[0].linha, 0);
+    al_draw_bitmap(starzinha, star[1].coluna, star[1].linha, 0);   // PRINTA ESTRELAS NO LABIRINTO
+    al_draw_bitmap(starzinha, star[2].coluna, star[2].linha, 0);
+    al_draw_bitmap(girl, gamer.coluna, gamer.linha, 0);   // PRINTA JOGADOR NO INÍCIO
+
+    al_flip_display(); //ATUALIZA DISPLAY
+
+    return 0;
+}
+
+int iniciarAllegro(){
+
+    if (!al_init()) {
+        fprintf(stderr, "Falha ao inicializar a Allegro.\n");
+        return -1;
+    }
+
+    al_init_font_addon();
+
+    if (!al_init_ttf_addon()) {
+        fprintf(stderr, "Falha ao inicializar add-on allegro_ttf.\n");
+        return -1;
+    }
+
+    if (!al_init_image_addon()) {
+        fprintf(stderr, "Falha ao inicializar add-on allegro_image.\n");
+        return false;
+    }
+
+    if (!al_install_keyboard()) {
+        fprintf(stderr, "Falha ao inicializar o teclado.\n");
+        return false;
+    }
+
+    if (!al_install_audio()) {
+        fprintf(stderr, "Falha ao inicializar áudio.\n");
+        return false;
+    }
+
+    if (!al_init_acodec_addon()) {
+        fprintf(stderr, "Falha ao inicializar codecs de áudio.\n");
+        return false;
+    }
+
+    if (!al_reserve_samples(1)) {
+        fprintf(stderr, "Falha ao alocar canais de áudio.\n");
+        return false;
+    }
+}
